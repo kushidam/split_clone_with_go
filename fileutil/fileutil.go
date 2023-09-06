@@ -5,6 +5,12 @@ import (
 	"os"
 )
 
+type IfileUtil interface {
+	CreateOutputFile(prefix string, idx []int) (*os.File, error)
+	WriteToByte(f *os.File, content []byte) error
+	WriteToLine(f *os.File, content []byte) error
+}
+
 func CreateOutputFile(prefix string, idx []int) (*os.File, error) {
 	asciiOffset := 97 // 'a'
 	asciiSuffix := []string{string(rune(asciiOffset + idx[0])), string(rune(asciiOffset + idx[1]))}
@@ -18,11 +24,15 @@ func CreateOutputFile(prefix string, idx []int) (*os.File, error) {
 }
 
 func WriteToByte(file *os.File, content []byte) error {
-    _, err := file.Write(content)
-    return err
+    if _, err := file.Write(content); err != nil {
+        return err
+    }
+    return nil
 }
 
 func WriteToLine(file *os.File, content string) error {
-	_, err := file.WriteString(content)
-	return err
+	if _, err := file.WriteString(content); err != nil {
+        return err
+    }
+    return nil
 }
