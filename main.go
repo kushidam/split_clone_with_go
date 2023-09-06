@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go_split_clone/option"
 	"os"
+	"split_clone_with_go/option"
 )
 
 func main() {
