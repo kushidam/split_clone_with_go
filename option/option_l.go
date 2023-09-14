@@ -11,9 +11,9 @@ func createOutputFile_l(prefix string, idx []int) (*os.File, error) {
 	asciiSuffix := []string{string(rune(asciiOffset + idx[0])), string(rune(asciiOffset + idx[1]))}
 	outputFileName := fmt.Sprintf("%s%s%s", prefix, asciiSuffix[1], asciiSuffix[0])
 
-    outputFile, err := os.Create(outputFileName)
-    if err != nil {
-        return nil, err
+    outputFile, errOsCreate := os.Create(outputFileName)
+    if errOsCreate != nil {
+        return nil, errOsCreate
     }
     return outputFile, nil
 }
@@ -26,14 +26,14 @@ func writeOutputFile(file *os.File, content string) error {
 
 func writeLinesFile(writeUnit int, content string, idx []int, inputLine *int, outputString *string) error {
 	if *inputLine >= writeUnit {
-		outputFile, err := createOutputFile_l("x", idx)
-		if err != nil {
-			return err
+		outputFile, errIoCreate := createOutputFile_l("x", idx)
+		if errIoCreate != nil {
+			return errIoCreate
 		}
 		defer outputFile.Close()
 
-		if err := writeOutputFile(outputFile, *outputString); err != nil {
-			return err
+		if errIoWrite := writeOutputFile(outputFile, *outputString); errIoWrite != nil {
+			return errIoWrite
 		}
 		*inputLine = 0
 		*outputString = ""
@@ -58,20 +58,20 @@ func Option_l(readUnit int, file *os.File) error {
 		line := scanner.Text()
 		outputString += line + "\n"
 		inputLine++
-		if err := writeLinesFile(readUnit, outputString, idx, &inputLine, &outputString); err != nil {
-			return err
+		if errIoLine := writeLinesFile(readUnit, outputString, idx, &inputLine, &outputString); errIoLine != nil {
+			return errIoLine
 		}
 	}
 
 	if inputLine > 0 {
-		outputFile, err := createOutputFile_l("x", idx)
-		if err != nil {
-			return err
+		outputFile, errIoCreate := createOutputFile_l("x", idx)
+		if errIoCreate != nil {
+			return errIoCreate
 		}
 		defer outputFile.Close()
 
-		if err := writeOutputFile(outputFile, outputString); err != nil {
-			return err
+		if errIoWrite := writeOutputFile(outputFile, outputString); errIoWrite != nil {
+			return errIoWrite
 		}
 	}
 

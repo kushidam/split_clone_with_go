@@ -16,8 +16,8 @@ func Option_n(chunks string, file *os.File) error {
 		return fmt.Errorf("[ERROR] 引数無効")
 	}
 
-	if err := validateArgs(inOption[1:]); err != nil {
-		return err
+	if errVarid := validateArgs(inOption[1:]); errVarid != nil {
+		return errVarid
 	}
 
 	if inOption[0] == "r" {
@@ -27,9 +27,9 @@ func Option_n(chunks string, file *os.File) error {
 		return fmt.Errorf("option 'l' 未実装")
 	}
 
-	intOption, err := strconv.Atoi(inOption[0])
-	if err != nil {
-		return err
+	intOption, errAtoi := strconv.Atoi(inOption[0])
+	if errAtoi != nil {
+		return errAtoi
 	}
 
 	if argsLen == 1 {
@@ -42,9 +42,9 @@ func Option_n(chunks string, file *os.File) error {
 func validateArgs(args []string) error {
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
-		_, err := strconv.Atoi(arg)
-		if err != nil {
-			return err
+		_, errValidate := strconv.Atoi(arg)
+		if errValidate != nil {
+			return errValidate
 		}
 	}
 	return nil
@@ -64,24 +64,24 @@ func option_n_default(splitNum int, file *os.File) error {
 	splitSize := make([]byte, int64(math.Ceil(float64(fileInfo.Size())/float64(splitNum))))
 
 	for {
-		n, err := file.Read(splitSize)
-		if err != nil && err != io.EOF {
-			return err
+		n, errIORead := file.Read(splitSize)
+		if errIORead != nil && errIORead != io.EOF {
+			return errIORead
 		}
 		if n == 0 {
 			break
 		}
 
 		outputFileName := fmt.Sprintf("%s%s%s", prefix, string(rune(asciiInt+idx[1])), string(rune(asciiInt+idx[0])))
-		outputFile, err := os.Create(outputFileName)
-		if err != nil {
-			return err
+		outputFile, errIOCreate := os.Create(outputFileName)
+		if errIOCreate != nil {
+			return errIOCreate
 		}
 		defer outputFile.Close()
 
-		_, err = outputFile.Write(splitSize[:n])
-		if err != nil {
-			return err
+		_, errIOWrite := outputFile.Write(splitSize[:n])
+		if errIOWrite != nil {
+			return errIOWrite
 		}
 
 		idx[0]++
